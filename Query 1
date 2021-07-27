@@ -1,0 +1,25 @@
+WITH MaxCompanySalaries AS(
+SELECT
+    company_id,
+    max(salary) as Max_Salary,
+    CASE
+    WHEN MAX(salary) < 1000 THEN 1
+    WHEN MAX(salary) BETWEEN 1000 AND 10001 THEN 0.76
+    WHEN MAX(salary) BETWEEN 10000 AND 100001 THEN 0.51
+    END AS Tax_Rate
+FROM
+    salaries
+GROUP BY
+    company_id
+)
+
+SELECT
+    s.company_id,
+    s.employee_id,
+    s.employee_name,
+    ROUND(s.salary*MaxCompanySalaries.Tax_Rate,0) AS salary
+FROM
+    salaries AS s,
+    MaxCompanySalaries
+WHERE
+    s.company_id = MaxCompanySalaries.company_id
